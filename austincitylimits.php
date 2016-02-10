@@ -2,6 +2,29 @@
 
 require_once 'austincitylimits.civix.php';
 
+function austincitylimits_civicrm_post($op, $objectName, $objectId, &$objectRef) {
+  if (strtolower($objectName) == 'address') {
+    switch ($op) {
+      case 'create':
+      case 'edit':
+        // check for lat and long and if its texas if so load districts
+        if ($objectRef->state_province_id == 1042 && !empty($objectRef->geo_code_1) && !empty($objectRef->geo_code_2) && !empty($objectRef->contact_id)) {
+          //load geoPHP
+          $geo = new CRM_Austincitylimits_Geo($objectRef->geo_code_1, $objectRef->geo_code_2);
+
+          //if address is edited to be no longer fufill if statement paramaters
+          //then no different from deleting
+          break;
+        }
+
+      case 'delete':
+        //clear custom field
+        break;
+    }
+
+  }
+}
+
 /**
  * Implements hook_civicrm_config().
  *

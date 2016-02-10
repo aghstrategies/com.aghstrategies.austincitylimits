@@ -2,7 +2,7 @@
 <extension key="com.aghstrategies.austincitylimits" type="module">
   <file>austincitylimits</file>
   <name>Austin Districts</name>
-  <description>sets City Council districts in Austin based on latitude and longitude.</description>
+  <description>Sets City Council districts in Austin based on latitude and longitude. This requires GEOS, see link for more info https://geophp.net/geos.html</description>
   <license>AGPL-3.0</license>
   <maintainer>
     <author>AGH Strategies</author>
