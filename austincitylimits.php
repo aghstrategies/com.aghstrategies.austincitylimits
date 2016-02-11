@@ -8,12 +8,18 @@ function austincitylimits_civicrm_post($op, $objectName, $objectId, &$objectRef)
       case 'create':
       case 'edit':
         // check for lat and long and if its texas if so load districts
-        if ($objectRef->state_province_id == 1042 && !empty($objectRef->geo_code_1) && !empty($objectRef->geo_code_2) && !empty($objectRef->contact_id) && strtolower($objectRef->geo_code_1) != 'null' && strtolower($objectRef->geo_code_2) != 'null' && strtolower($objectRef->contact_id) != 'null') {
+        if ($objectRef->state_province_id == 1042 &&
+        !empty($objectRef->geo_code_1) &&
+        !empty($objectRef->geo_code_2) &&
+        !empty($objectRef->contact_id) &&
+        strtolower($objectRef->geo_code_1) != 'null' &&
+        strtolower($objectRef->geo_code_2) != 'null' &&
+        strtolower($objectRef->contact_id) != 'null') {
           //load geoPHP
           $geo = new CRM_Austincitylimits_Geo($objectRef->geo_code_1, $objectRef->geo_code_2);
           $geo->saveDistrict($objectRef->contact_id);
-          //if address is edited to no longer fufill if statement paramaters
-          //then no different from deleting
+          // if address is edited to no longer fufill if statement paramaters
+          // then no different from deleting
           break;
         }
 
