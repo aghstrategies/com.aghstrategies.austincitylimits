@@ -30,15 +30,22 @@ class CRM_Austincitylimits_Geo {
     // find point of address
     $point = array(
       'type' => 'Point',
-      'coordinates' => array($lat, $long),
+      'coordinates' => array($long, $lat),
     );
     $pointJson = json_encode($point);
     $this->address = geoPHP::load($pointJson, 'json');
 
-    //find districts
+    // Load districts.
     $austinJson = file_get_contents(CRM_Core_Resources::singleton()->getUrl('com.aghstrategies.austincitylimits', 'CRM/Austincitylimits/Districts.geojson'));
-    $alldistricts = geoPHP::load($austinJson, 'json');
-    $districts = $alldistricts->getComponents();
+
+    // Split districts geometry into separate features.
+    $austinArray = json_decode($austinJson, TRUE);
+    $districts = $austinArray['features'];
+    foreach ($districts as &$district) {
+      // Put back to JSON and load to geoPHP.
+      $district = json_encode($district);
+      $district = geoPHP::load($district, 'json');
+    }
     $this->district = $this->getDistrict($districts);
   }
 
@@ -53,13 +60,11 @@ class CRM_Austincitylimits_Geo {
    */
   public function getDistrict($districts) {
     foreach ($districts as $key => $district) {
-      $addressGeos = $address->geos();
-      if ($district->geos()->contains($addressGeos)) {
+      if ($district->contains($this->address)) {
+        // We know that the districts are all in order in the file.
         return $key + 1;
       }
     }
-    // Put it back into a geoPHP geometry
-    $geometry = geoPHP::geosToGeometry($geos_result);
 
   }
 
