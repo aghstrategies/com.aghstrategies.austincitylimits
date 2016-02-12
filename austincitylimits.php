@@ -36,11 +36,35 @@ function austincitylimits_civicrm_post($op, $objectName, $objectId, &$objectRef)
  * Implements hook_civicrm_validateForm().
  */
 function austincitylimits_civicrm_validateForm($formName, &$fields, &$files, &$form, &$errors) {
-  if ($formName != "CRM_Contact_Form_Contact" && $formName != 'CRM_Contact_Form_Inline_CustomData') {
+  if (($formName != "CRM_Contact_Form_Contact" && $formName != 'CRM_Contact_Form_Inline_CustomData')
+    || empty($form->_contactId)) {
     return;
   }
+
   foreach ($fields as $fieldName => $val) {
     if (strpos($fieldName, 'custom_7_') === 0 || $fieldName == 'custom_7') {
+      try {
+        $address = civicrm_api3('Address', 'getsingle', array(
+          'return' => "state_province_id,geo_code_1,geo_code_2",
+          'contact_id' => $form->_contactId,
+          'location_type_id' => "Home",
+        ));
+      }
+      catch (CiviCRM_API3_Exception $e) {
+        $error = $e->getMessage();
+        CRM_Core_Error::debug_log_message(ts('API Error', array(
+          'domain' => 'com.aghstrategies.austincitylimits',
+          1 => $error,
+        )));
+        return;
+      }   
+      if (CRM_Utils_Array::value('state_province_id', $address) != 1042
+        || empty($address["geo_code_1"])
+        || empty($address["geo_code_2"])) {
+        return;
+      }
+      // We have enough address info to calculate the district, therefore we
+      // shouldn't let it be saved manually.
       $data = &$form->controller->container();
       if ($formName == 'CRM_Contact_Form_Inline_CustomData') {
         unset($data['values']['CustomData'][$fieldName]);
