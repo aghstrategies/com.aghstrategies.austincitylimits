@@ -7,6 +7,7 @@ function austincitylimits_civicrm_post($op, $objectName, $objectId, &$objectRef)
     switch ($op) {
       case 'create':
       case 'edit':
+        // TODO: make sure location type is "home"
         // check for lat and long and if its texas if so load districts
         if ($objectRef->state_province_id == 1042 &&
         !empty($objectRef->geo_code_1) &&
@@ -31,6 +32,25 @@ function austincitylimits_civicrm_post($op, $objectName, $objectId, &$objectRef)
   }
 }
 
+/**
+ * Implements hook_civicrm_validateForm().
+ */
+function austincitylimits_civicrm_validateForm($formName, &$fields, &$files, &$form, &$errors) {
+  if ($formName != "CRM_Contact_Form_Contact" && $formName != 'CRM_Contact_Form_Inline_CustomData') {
+    return;
+  }
+  foreach ($fields as $fieldName => $val) {
+    if (strpos($fieldName, 'custom_7_') === 0 || $fieldName == 'custom_7') {
+      $data = &$form->controller->container();
+      if ($formName == 'CRM_Contact_Form_Inline_CustomData') {
+        unset($data['values']['CustomData'][$fieldName]);
+      }
+      else {
+        unset($data['values']['Contact'][$fieldName]);
+      }
+    }
+  }
+}
 /**
  * Implements hook_civicrm_config().
  *
