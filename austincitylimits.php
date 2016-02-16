@@ -16,9 +16,30 @@ function austincitylimits_civicrm_post($op, $objectName, $objectId, &$objectRef)
           strtolower($objectRef->geo_code_1) != 'null' &&
           strtolower($objectRef->geo_code_2) != 'null' &&
           strtolower($objectRef->contact_id) != 'null') {
-          //load geoPHP
+          //load Geophp
           $geo = new CRM_Austincitylimits_Geo($objectRef->geo_code_1, $objectRef->geo_code_2);
           $geo->saveDistrict($objectRef->contact_id);
+
+          //go find inherited addresses
+          try {
+            $inheritedAddresses = civicrm_api3('Address', 'get', array(
+              'sequential' => 1,
+              'return' => "contact_id",
+              'master_id' => $objectId,
+            ));
+            //loop thru inherited addresses and run save district to add district to the inherited contacts
+            foreach ($inheritedAddresses['values'] as $key => $value) {
+              $geo->saveDistrict($value['contact_id']);
+            }
+          }
+          catch (CiviCRM_API3_Exception $e) {
+            $error = $e->getMessage();
+            CRM_Core_Error::debug_log_message(ts('API Error %1', array(
+              'domain' => 'com.aghstrategies.austincitylimits',
+              1 => $error,
+            )));
+          }
+
           // if address is edited to no longer fufill if statement paramaters
           // then no different from deleting
           break;
