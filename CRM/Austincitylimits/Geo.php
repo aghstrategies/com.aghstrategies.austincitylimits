@@ -82,7 +82,7 @@ class CRM_Austincitylimits_Geo {
     }
     catch (CiviCRM_API3_Exception $e) {
       $error = $e->getMessage();
-      CRM_Core_Error::debug_log_message(ts('API Error', array(
+      CRM_Core_Error::debug_log_message(ts('API Error: %1', array(
         'domain' => 'com.aghstrategies.austincitylimits',
         1 => $error,
       )));
@@ -96,7 +96,7 @@ class CRM_Austincitylimits_Geo {
    *  The contact Id
    *
    */
-  public function deleteDistrict($contactId) {
+  public static function deleteDistrict($contactId) {
     try {
       $result = civicrm_api3('Contact', 'create', array(
         'custom_7' => "",
@@ -105,7 +105,7 @@ class CRM_Austincitylimits_Geo {
     }
     catch (CiviCRM_API3_Exception $e) {
       $error = $e->getMessage();
-      CRM_Core_Error::debug_log_message(ts('API Error', array(
+      CRM_Core_Error::debug_log_message(ts('API Error: %1', array(
         'domain' => 'com.aghstrategies.austincitylimits',
         1 => $error,
       )));

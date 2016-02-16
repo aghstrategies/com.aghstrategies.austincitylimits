@@ -10,12 +10,12 @@ function austincitylimits_civicrm_post($op, $objectName, $objectId, &$objectRef)
         // TODO: make sure location type is "home"
         // check for lat and long and if its texas if so load districts
         if ($objectRef->state_province_id == 1042 &&
-        !empty($objectRef->geo_code_1) &&
-        !empty($objectRef->geo_code_2) &&
-        !empty($objectRef->contact_id) &&
-        strtolower($objectRef->geo_code_1) != 'null' &&
-        strtolower($objectRef->geo_code_2) != 'null' &&
-        strtolower($objectRef->contact_id) != 'null') {
+          !empty($objectRef->geo_code_1) &&
+          !empty($objectRef->geo_code_2) &&
+          !empty($objectRef->contact_id) &&
+          strtolower($objectRef->geo_code_1) != 'null' &&
+          strtolower($objectRef->geo_code_2) != 'null' &&
+          strtolower($objectRef->contact_id) != 'null') {
           //load geoPHP
           $geo = new CRM_Austincitylimits_Geo($objectRef->geo_code_1, $objectRef->geo_code_2);
           $geo->saveDistrict($objectRef->contact_id);
@@ -25,7 +25,7 @@ function austincitylimits_civicrm_post($op, $objectName, $objectId, &$objectRef)
         }
 
       case 'delete':
-        deleteDistrict($objectRef->contact_id);
+        CRM_Austincitylimits_Geo::deleteDistrict($objectRef->contact_id);
         break;
     }
 
@@ -36,13 +36,23 @@ function austincitylimits_civicrm_post($op, $objectName, $objectId, &$objectRef)
  * Implements hook_civicrm_validateForm().
  */
 function austincitylimits_civicrm_validateForm($formName, &$fields, &$files, &$form, &$errors) {
-  if (($formName != "CRM_Contact_Form_Contact" && $formName != 'CRM_Contact_Form_Inline_CustomData')
-    || empty($form->_contactId)) {
+  //weed out wrong forms
+  if ($formName != "CRM_Contact_Form_Contact"
+    && $formName != 'CRM_Contact_Form_Inline_CustomData') {
     return;
   }
 
+  //exsisting contact check if address enough information
   foreach ($fields as $fieldName => $val) {
     if (strpos($fieldName, 'custom_7_') === 0 || $fieldName == 'custom_7') {
+      //new contact dont let a blank customfield value override calculation
+      if (empty($form->_contactId)) {
+        if (empty($val)) {
+          $data = &$form->controller->container();
+          unset($data['values']['Contact'][$fieldName]);
+        }
+        return;
+      }
       try {
         $address = civicrm_api3('Address', 'getsingle', array(
           'return' => "state_province_id,geo_code_1,geo_code_2",
@@ -52,12 +62,12 @@ function austincitylimits_civicrm_validateForm($formName, &$fields, &$files, &$f
       }
       catch (CiviCRM_API3_Exception $e) {
         $error = $e->getMessage();
-        CRM_Core_Error::debug_log_message(ts('API Error', array(
+        CRM_Core_Error::debug_log_message(ts('API Error %1', array(
           'domain' => 'com.aghstrategies.austincitylimits',
           1 => $error,
         )));
         return;
-      }   
+      }
       if (CRM_Utils_Array::value('state_province_id', $address) != 1042
         || empty($address["geo_code_1"])
         || empty($address["geo_code_2"])) {
