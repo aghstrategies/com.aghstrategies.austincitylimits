@@ -112,4 +112,24 @@ class CRM_Austincitylimits_Geo {
     }
   }
 
+  /**
+   * Remove the field value from the submitted form values.
+   *
+   * @param  string $formName
+   *   Form name
+   * @param  CRM_Contact_Form_Contact|CRM_Contact_Form_Inline_CustomData $form
+   *   The form object
+   * @param  string $districtField
+   *   The name of the district field to clear
+   */
+  public static function dontSaveDistrict($formName, &$form, $districtField) {
+    $data = &$form->controller->container();
+    if ($formName == 'CRM_Contact_Form_Inline_CustomData') {
+      unset($data['values']['CustomData'][$districtField]);
+    }
+    else {
+      unset($data['values']['Contact'][$districtField]);
+    }
+  }
+
 }

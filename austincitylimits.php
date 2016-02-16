@@ -3,11 +3,11 @@
 require_once 'austincitylimits.civix.php';
 
 function austincitylimits_civicrm_post($op, $objectName, $objectId, &$objectRef) {
-  if (strtolower($objectName) == 'address') {
+  if (strtolower($objectName) == 'address' && $objectRef->location_type_id == 1) {
+
     switch ($op) {
       case 'create':
       case 'edit':
-        // TODO: make sure location type is "home"
         // check for lat and long and if its texas if so load districts
         if ($objectRef->state_province_id == 1042 &&
           !empty($objectRef->geo_code_1) &&
@@ -42,17 +42,30 @@ function austincitylimits_civicrm_validateForm($formName, &$fields, &$files, &$f
     return;
   }
 
-  //exsisting contact check if address enough information
+  //look for district field
   foreach ($fields as $fieldName => $val) {
     if (strpos($fieldName, 'custom_7_') === 0 || $fieldName == 'custom_7') {
       //new contact dont let a blank customfield value override calculation
       if (empty($form->_contactId)) {
         if (empty($val)) {
-          $data = &$form->controller->container();
-          unset($data['values']['Contact'][$fieldName]);
+          CRM_Austincitylimits_Geo::dontSaveDistrict($formName, $form, $fieldName);
         }
         return;
       }
+      //look if address info is being saved Now
+      if (!empty($fields['address']) && is_array($fields['address'])) {
+        foreach ($fields['address'] as $key => $formAddress) {
+          if ($formAddress['location_type_id'] != 1) {
+            continue;
+          }
+          if (!empty($formAddress['street_address']) && !empty($formAddress['city']) && !empty($formAddress['state_province_id'])) {
+            CRM_Austincitylimits_Geo::dontSaveDistrict($formName, $form, $fieldName);
+          }
+          return;
+        }
+      }
+
+      //no address info in this form so we go look it up
       try {
         $address = civicrm_api3('Address', 'getsingle', array(
           'return' => "state_province_id,geo_code_1,geo_code_2",
@@ -75,13 +88,7 @@ function austincitylimits_civicrm_validateForm($formName, &$fields, &$files, &$f
       }
       // We have enough address info to calculate the district, therefore we
       // shouldn't let it be saved manually.
-      $data = &$form->controller->container();
-      if ($formName == 'CRM_Contact_Form_Inline_CustomData') {
-        unset($data['values']['CustomData'][$fieldName]);
-      }
-      else {
-        unset($data['values']['Contact'][$fieldName]);
-      }
+      CRM_Austincitylimits_Geo::dontSaveDistrict($formName, $form, $fieldName);
     }
   }
 }
