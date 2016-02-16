@@ -3,33 +3,30 @@
 require_once 'austincitylimits.civix.php';
 
 function austincitylimits_civicrm_post($op, $objectName, $objectId, &$objectRef) {
-  if (strtolower($objectName) == 'address' && $objectRef->location_type_id == 1) {
+  if (strtolower($objectName) == 'address') {
 
     switch ($op) {
       case 'create':
       case 'edit':
-        // check for lat and long and if its texas if so load districts
+        // First, make sure address is in Texas and has lat/long.
         if ($objectRef->state_province_id == 1042 &&
           !empty($objectRef->geo_code_1) &&
           !empty($objectRef->geo_code_2) &&
-          !empty($objectRef->contact_id) &&
           strtolower($objectRef->geo_code_1) != 'null' &&
-          strtolower($objectRef->geo_code_2) != 'null' &&
-          strtolower($objectRef->contact_id) != 'null') {
-          //load Geophp
-          $geo = new CRM_Austincitylimits_Geo($objectRef->geo_code_1, $objectRef->geo_code_2);
-          $geo->saveDistrict($objectRef->contact_id);
+          strtolower($objectRef->geo_code_2) != 'null') {
+          $contacts = array();
 
-          //go find inherited addresses
+          // Find contacts inheriting the address as their home address - add to
+          // list.
           try {
             $inheritedAddresses = civicrm_api3('Address', 'get', array(
               'sequential' => 1,
               'return' => "contact_id",
               'master_id' => $objectId,
+              'location_type_id' => "Home",
             ));
-            //loop thru inherited addresses and run save district to add district to the inherited contacts
             foreach ($inheritedAddresses['values'] as $key => $value) {
-              $geo->saveDistrict($value['contact_id']);
+              $contacts[] = $value['contact_id'];
             }
           }
           catch (CiviCRM_API3_Exception $e) {
@@ -40,13 +37,39 @@ function austincitylimits_civicrm_post($op, $objectName, $objectId, &$objectRef)
             )));
           }
 
-          // if address is edited to no longer fufill if statement paramaters
-          // then no different from deleting
-          break;
+          // See if address is home location type and has contact - add to list.
+          if ($objectRef->location_type_id == 1 &&
+            strtolower($objectRef->contact_id) != 'null' &&
+            !empty($objectRef->contact_id)) {
+            $contacts[] = $objectRef->contact_id;
+          }
+
+          // If list of contacts is empty, we're done.
+          if (empty($contacts)) {
+            return;
+          }
+
+          // Prep the geoPHP info.
+          $geo = new CRM_Austincitylimits_Geo($objectRef->geo_code_1, $objectRef->geo_code_2);
+
+          // Go through list of contacts and save district.
+          foreach ($contacts as $contactId) {
+            $geo->saveDistrict($contactId);
+          }
         }
+        elseif ($objectRef->location_type_id == 1 &&
+          strtolower($objectRef->contact_id) != 'null' &&
+          !empty($objectRef->contact_id)) {
+          CRM_Austincitylimits_Geo::deleteDistrict($objectRef->contact_id);
+        }
+        break;
 
       case 'delete':
-        CRM_Austincitylimits_Geo::deleteDistrict($objectRef->contact_id);
+        if ($objectRef->location_type_id == 1 &&
+          strtolower($objectRef->contact_id) != 'null' &&
+          !empty($objectRef->contact_id)) {
+          CRM_Austincitylimits_Geo::deleteDistrict($objectRef->contact_id);
+        }
         break;
     }
 
