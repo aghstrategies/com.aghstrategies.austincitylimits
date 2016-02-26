@@ -88,7 +88,7 @@ function austincitylimits_civicrm_validateForm($formName, &$fields, &$files, &$f
 
   //look for district field
   foreach ($fields as $fieldName => $val) {
-    if (strpos($fieldName, 'custom_7_') === 0 || $fieldName == 'custom_7') {
+    if (strpos($fieldName, 'custom_59_') === 0 || $fieldName == 'custom_59') {
       //new contact dont let a blank customfield value override calculation
       if (empty($form->_contactId)) {
         if (empty($val)) {

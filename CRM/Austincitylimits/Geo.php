@@ -76,7 +76,7 @@ class CRM_Austincitylimits_Geo {
   public function saveDistrict($contactId) {
     try {
       $result = civicrm_api3('Contact', 'create', array(
-        'custom_7' => $this->district,
+        'custom_59' => $this->district,
         'id' => $contactId,
       ));
     }
@@ -99,7 +99,7 @@ class CRM_Austincitylimits_Geo {
   public static function deleteDistrict($contactId) {
     try {
       $result = civicrm_api3('Contact', 'create', array(
-        'custom_7' => "",
+        'custom_59' => "",
         'id' => $contactId,
       ));
     }
