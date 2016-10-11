@@ -7,7 +7,6 @@
  * Licensed under the GNU Affero Public License 3.0 (see LICENSE.txt)
  */
 require_once 'CRM/Core/Form.php';
-require_once '../../../austincitylimits.php';
 
 /**
  * Administrative settings for the extension.
@@ -32,7 +31,7 @@ class CRM_Austincitylimits_Form_Settings extends CRM_Core_Form {
       ),
     ));
     // Send element names to the form.
-    $this->assign('elementNames', 'customfielddistrict');
+    $this->assign('elementNames', array('customfielddistrict'));
     parent::buildQuickForm();
   }
   /**
@@ -49,7 +48,6 @@ class CRM_Austincitylimits_Form_Settings extends CRM_Core_Form {
       CRM_Core_Error::debug_log_message(t('API Error: %1', array(1 => $error, 'domain' => 'com.aghstrategies.austincitylimits')));
       CRM_Core_Session::setStatus(ts('Error saving custom field for city council district', array('domain' => 'com.aghstrategies.austincitylimits')), 'Error', 'error');
     }
-    austincitylimits_civicrm_allAddresses();
     parent::postProcess();
   }
 }
