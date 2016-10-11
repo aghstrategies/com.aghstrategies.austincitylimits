@@ -81,7 +81,7 @@ function austincitylimits_civicrm_allAddresses() {
     $addresses = civicrm_api3('Address', 'get', array(
       'sequential' => 1,
       'location_type_id' => "Home",
-      'state_province_id' == 1042,
+      'state_province_id' => 1042,
       'options' => array('limit' => ""),
     ));
   }
@@ -99,7 +99,7 @@ function austincitylimits_civicrm_allAddresses() {
     $objectRef->geo_code_2 = $address['geo_code_2'];
     $objectRef->location_type_id = $address['location_type_id'];
     $objectRef->contact_id = $address['contact_id'];
-    austincitylimits_civicrm_post('edit', 'address', $objectId, &$objectRef);
+    austincitylimits_civicrm_post('edit', 'address', $objectId, $objectRef);
   }
 }
 
