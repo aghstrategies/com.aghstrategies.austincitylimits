@@ -31,3 +31,8 @@ ldconfig
 
 ```
 4. Enable extension
+
+To Run the Script to update pre-exsisting contacts
+-------------------------------------------------
+1. Go to Scheduled jobs
+2. Run the Call Austincitylimits.Citycouncildistrict API (Hourly) job

@@ -9,6 +9,7 @@
  * @see http://wiki.civicrm.org/confluence/display/CRMDOC/API+Architecture+Standards
  */
 function _civicrm_api3_austincitylimits_Citycouncildistrict_spec(&$spec) {
+  // TODO add settings for limit, offset, and force
   // $spec['magicword']['api.required'] = 1;
 }
 
@@ -29,6 +30,9 @@ function civicrm_api3_austincitylimits_Citycouncildistrict($params) {
     'geo_code_2' => array('IS NOT NULL' => 1),
     'state_province_id' => 1042,
     'location_type_id' => 1,
+    'contact_type' => "Individual",
+    'city' => "Austin",
+
   );
   // THIS WILL ONLY GET Contacts whose PRIMARY ADDRESS is home
 
