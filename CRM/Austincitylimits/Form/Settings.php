@@ -7,7 +7,7 @@
  * Licensed under the GNU Affero Public License 3.0 (see LICENSE.txt)
  */
 require_once 'CRM/Core/Form.php';
-require_once 'austincitylimits.php';
+
 /**
  * Administrative settings for the extension.
  */
@@ -32,13 +32,22 @@ class CRM_Austincitylimits_Form_Settings extends CRM_Core_Form {
    * [austincitylimits_allAddresses description]
    */
   public function austincitylimits_allAddresses() {
+    $params = array(
+      'sequential' => 1,
+      'custom_59' => array('IS NULL' => 1),
+      'geo_code_1' => array('IS NOT NULL' => 1),
+      'geo_code_2' => array('IS NOT NULL' => 1),
+      'state_province_id' => 1042,
+      'location_type_id' => 1,
+    );
+    // THIS WILL ONLY GET Contacts whose PRIMARY ADDRESS is home
+
+    // TODO fix options bassed on API
+    // if ($options) {
+    //   $params['options'] = $options;
+    // }
     try {
-      $addresses = civicrm_api3('Address', 'get', array(
-        'sequential' => 1,
-        'location_type_id' => "Home",
-        'state_province_id' => 1042,
-        'options' => array('limit' => ""),
-      ));
+      $addresses = civicrm_api3('Contact', 'get', $params);
     }
     catch (CiviCRM_API3_Exception $e) {
       $error = $e->getMessage();
@@ -48,13 +57,8 @@ class CRM_Austincitylimits_Form_Settings extends CRM_Core_Form {
       )));
     }
     foreach ($addresses['values'] as $address) {
-      $objectId = $address['id'];
-      $objectRef->state_province_id = $address['state_province_id'];
-      $objectRef->geo_code_1 = $address['geo_code_1'];
-      $objectRef->geo_code_2 = $address['geo_code_2'];
-      $objectRef->location_type_id = $address['location_type_id'];
-      $objectRef->contact_id = $address['contact_id'];
-      austincitylimits_civicrm_post('edit', 'address', $objectId, $objectRef);
+      $geo = new CRM_Austincitylimits_Geo($address['geo_code_1'], $address['geo_code_2']);
+      $geo->saveDistrict($address['contact_id']);
     }
   }
 
@@ -63,7 +67,7 @@ class CRM_Austincitylimits_Form_Settings extends CRM_Core_Form {
    */
   public function postProcess() {
     // $values = $this->exportValues();
-    $this->austincitylimits_allAddresses();
+    austincitylimits_allAddresses();
     parent::postProcess();
   }
 
