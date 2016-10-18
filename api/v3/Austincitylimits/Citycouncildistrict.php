@@ -40,12 +40,8 @@ function civicrm_api3_austincitylimits_Citycouncildistrict($params) {
     $addresses = civicrm_api3('Contact', 'get', $params);
   }
   catch (CiviCRM_API3_Exception $e) {
-    throw new API_Exception(/*errorMessage*/ 'Everyone knows that the magicword is "sesame"', /*errorCode*/ 1234);
     $error = $e->getMessage();
-    CRM_Core_Error::debug_log_message(ts('API Error %1', array(
-      'domain' => 'com.aghstrategies.austincitylimits',
-      1 => $error,
-    )));
+    throw new API_Exception(/*errorMessage*/ ts('Cannot find any contacts with a primary home addresse in Texas with an empty city council district', array('domain' => 'com.aghstrategies.austincitylimits')), /*errorCode*/ 10);
   }
   foreach ($addresses['values'] as $address) {
     $geo = new CRM_Austincitylimits_Geo($address['geo_code_1'], $address['geo_code_2']);
