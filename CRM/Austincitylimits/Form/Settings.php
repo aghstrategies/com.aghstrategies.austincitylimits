@@ -7,7 +7,7 @@
  * Licensed under the GNU Affero Public License 3.0 (see LICENSE.txt)
  */
 require_once 'CRM/Core/Form.php';
-require_once 'austincitylimits.php';
+require_once '../../../austincitylimits.php';
 /**
  * Administrative settings for the extension.
  */
@@ -54,7 +54,7 @@ class CRM_Austincitylimits_Form_Settings extends CRM_Core_Form {
       $objectRef->geo_code_2 = $address['geo_code_2'];
       $objectRef->location_type_id = $address['location_type_id'];
       $objectRef->contact_id = $address['contact_id'];
-      austincitylimits_civicrm_post('edit', 'address', $objectId, $objectRef);
+      $this->austincitylimits_civicrm_post('edit', 'address', $objectId, $objectRef);
     }
   }
 
@@ -63,7 +63,7 @@ class CRM_Austincitylimits_Form_Settings extends CRM_Core_Form {
    */
   public function postProcess() {
     // $values = $this->exportValues();
-    $this->austincitylimits_allAddresses();
+    austincitylimits_allAddresses();
     parent::postProcess();
   }
 
