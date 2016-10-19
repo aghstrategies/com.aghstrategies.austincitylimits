@@ -32,8 +32,6 @@ function civicrm_api3_austincitylimits_Citycouncildistrict($params) {
     'location_type_id' => 1,
     'contact_type' => "Individual",
     'city' => "Austin",
-    'options' => array('limit' => 100),
-
   );
   // THIS WILL ONLY GET Contacts whose PRIMARY ADDRESS is home
 
