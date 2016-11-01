@@ -1,9 +1,13 @@
-To install:
-===========
-
+To Set up the extension:
+-----------------------
 1. In CiviCRM set up custom field on contact for City Council District.
 2. In the code Find and replace 7 with custom field number (can use api explorer to find custom field #) where needed (saveDistrict, deleteDistrict, and in validateForm functions in austincitylimits.php and Geo.php)
-3. Install Geos see command line instructions below for more information see http://www.saintsjd.com/2014/06/05/howto-intsall-libgeos-with-php5-bindings-ubuntu-trusty-14.04.html
+3. Set up Geos on the server (see instructions below)
+4. enable the extension
+
+### To install Geos
+
+Install Geos see command line instructions below for more information see http://www.saintsjd.com/2014/06/05/howto-intsall-libgeos-with-php5-bindings-ubuntu-trusty-14.04.html
 
 ```
 sudo apt-get install -y apache2 php5 libapache2-mod-php5 php5-dev phpunit
@@ -30,9 +34,8 @@ sudo service apache2 restart
 ldconfig
 
 ```
-4. Enable extension
 
-To Run the Script to update pre-exsisting contacts
--------------------------------------------------
+### To Run the Script to update pre-exsisting contacts
+
 1. Go to Scheduled jobs
 2. Run the Call Austincitylimits.Citycouncildistrict API (Hourly) job
