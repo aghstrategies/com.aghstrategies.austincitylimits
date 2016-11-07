@@ -35,10 +35,6 @@ function civicrm_api3_austincitylimits_Citycouncildistrict($params) {
   );
   // THIS WILL ONLY GET Contacts whose PRIMARY ADDRESS is home
 
-  // TODO fix options bassed on API
-  // if ($options) {
-  //   $params['options'] = $options;
-  // }
   try {
     $addresses = civicrm_api3('Contact', 'get', $params);
   }
