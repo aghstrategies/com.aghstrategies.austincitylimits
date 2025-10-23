@@ -20,7 +20,7 @@ function _civicrm_api3_austincitylimits_Citycouncildistrict_spec(&$spec) {
  * @return array API result descriptor
  * @see civicrm_api3_create_success
  * @see civicrm_api3_create_error
- * @throws API_Exception
+ * @throws CRM_Core_Exception
  */
 function civicrm_api3_austincitylimits_Citycouncildistrict($params) {
   $params = array(
@@ -38,9 +38,9 @@ function civicrm_api3_austincitylimits_Citycouncildistrict($params) {
   try {
     $addresses = civicrm_api3('Contact', 'get', $params);
   }
-  catch (CiviCRM_API3_Exception $e) {
+  catch (CRM_Core_Exception $e) {
     $error = $e->getMessage();
-    throw new API_Exception(/*errorMessage*/ ts('Cannot find any contacts with a primary home addresse in Texas with an empty city council district', array('domain' => 'com.aghstrategies.austincitylimits')), /*errorCode*/ 10);
+    throw new CRM_Core_Exception(/*errorMessage*/ ts('Cannot find any contacts with a primary home addresse in Texas with an empty city council district', array('domain' => 'com.aghstrategies.austincitylimits')), /*errorCode*/ 10);
   }
   foreach ($addresses['values'] as $address) {
     $geo = new CRM_Austincitylimits_Geo($address['geo_code_1'], $address['geo_code_2']);

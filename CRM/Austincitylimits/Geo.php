@@ -80,7 +80,7 @@ class CRM_Austincitylimits_Geo {
         'id' => $contactId,
       ));
     }
-    catch (CiviCRM_API3_Exception $e) {
+    catch (CRM_Core_Exception $e) {
       $error = $e->getMessage();
       CRM_Core_Error::debug_log_message(ts('API Error: %1', array(
         'domain' => 'com.aghstrategies.austincitylimits',
@@ -103,7 +103,7 @@ class CRM_Austincitylimits_Geo {
         'id' => $contactId,
       ));
     }
-    catch (CiviCRM_API3_Exception $e) {
+    catch (CRM_Core_Exception $e) {
       $error = $e->getMessage();
       CRM_Core_Error::debug_log_message(ts('API Error: %1', array(
         'domain' => 'com.aghstrategies.austincitylimits',

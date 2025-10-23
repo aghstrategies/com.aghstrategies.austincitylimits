@@ -29,7 +29,7 @@ function austincitylimits_civicrm_post($op, $objectName, $objectId, &$objectRef)
               $contacts[] = $value['contact_id'];
             }
           }
-          catch (CiviCRM_API3_Exception $e) {
+          catch (CRM_Core_Exception $e) {
             $error = $e->getMessage();
             CRM_Core_Error::debug_log_message(ts('API Error %1', array(
               'domain' => 'com.aghstrategies.austincitylimits',
@@ -118,7 +118,7 @@ function austincitylimits_civicrm_validateForm($formName, &$fields, &$files, &$f
           'location_type_id' => "Home",
         ));
       }
-      catch (CiviCRM_API3_Exception $e) {
+      catch (CRM_Core_Exception $e) {
         $error = $e->getMessage();
         CRM_Core_Error::debug_log_message(ts('API Error %1', array(
           'domain' => 'com.aghstrategies.austincitylimits',
